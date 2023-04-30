@@ -4,7 +4,6 @@
 	<groupId>io.forest</groupId>
 	<artifactId>io.forest.openltabletdojo</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<packaging>openl</packaging>
 	<name>OpenL Simple Project</name>
 	<url>https://openl-tablets.org</url>
 	<organization>
@@ -13,9 +12,13 @@
 	</organization>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 		<org.openl.version>5.26.7</org.openl.version>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<!--
+		<org.openl.version>5.26.7</org.openl.version>
+		-->
+		<maven.compiler.source>18</maven.compiler.source>
+		<maven.compiler.target>18</maven.compiler.target>
 	</properties>
 
 
@@ -32,6 +35,14 @@
 			<artifactId>org.openl.rules.project</artifactId>
 			<version>${org.openl.version}</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.openl.rules/org.openl.rules.ruleservice -->
+		<dependency>
+			<groupId>org.openl.rules</groupId>
+			<artifactId>org.openl.rules.ruleservice</artifactId>
+			<version>${org.openl.version}</version>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j -->
 		<dependency>
@@ -77,23 +88,72 @@
 
 	</dependencies>
 	<build>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
+				<configuration>
+					<compilerArgs>
+						<compilerArg>--add-opens=java.base/java.lang=ALL-UNNAMED</compilerArg>
+						<compilerArg>--add-opens=java.base/java.util=ALL-UNNAMED</compilerArg>
+
+					</compilerArgs>
+				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/openl/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/openl</directory>
+									<!--
+									<filtering>true</filtering>
+									-->
+								</resource>
+							</resources>
+							<fileNameFiltering>*.xlsx</fileNameFiltering>
+						</configuration>
+
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.openl.rules</groupId>
 				<artifactId>openl-maven-plugin</artifactId>
 				<version>${org.openl.version}</version>
-				<configuration>
-					<argLine>
-					    --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-					    --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
-					</argLine>
-				</configuration>
 				<extensions>true</extensions>
+
+
+				<!--
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
+				-->
+
+
+				<!--
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+-->
 			</plugin>
 		</plugins>
 	</build>
